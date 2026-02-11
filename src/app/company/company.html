@@ -1,0 +1,74 @@
+<div class="space-y-6">
+  <!-- Company Title -->
+  <div class="bg-white rounded-lg shadow-md p-6">
+    <h1 class="text-2xl font-bold text-gray-800">{{ companyName }}</h1>
+  </div>
+
+  <!-- Update Company Name -->
+  <div class="bg-white rounded-lg shadow-md p-6">
+    <form [formGroup]="companyForm" class="flex gap-4">
+      <input 
+        type="text" 
+        formControlName="newCompanyName"
+        class="flex-1 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+      >
+      <button 
+        type="button"
+        (click)="updateCompanyName()"
+        [disabled]="companyForm.invalid"
+        class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:bg-gray-400 disabled:cursor-not-allowed"
+      >
+        Guardar
+      </button>
+    </form>
+  </div>
+
+  <!-- Routes Section -->
+  <div class="bg-white rounded-lg shadow-md p-6">
+    <h2 class="text-xl font-semibold text-gray-800 mb-4">Rutas</h2>
+    
+    <!-- Add Route Form -->
+    <div class="mb-6">
+      <form [formGroup]="routeForm" class="flex gap-4">
+        <input 
+          type="text" 
+          formControlName="routeName"
+          placeholder="Nombre de la ruta"
+          class="flex-1 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+        >
+        <button 
+          type="button"
+          (click)="addRoute()"
+          [disabled]="routeForm.invalid"
+          class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:bg-gray-400 disabled:cursor-not-allowed"
+        >
+          Guardar
+        </button>
+      </form>
+    </div>
+
+    <!-- Routes List -->
+    <div class="space-y-2">
+      <div *ngIf="routes.length === 0" class="text-gray-500 text-center py-4">
+        No hay rutas registradas
+      </div>
+      
+      <div 
+        *ngFor="let route of routes" 
+        class="flex items-center justify-between p-3 border border-gray-200 rounded-md hover:bg-gray-50 cursor-pointer"
+      >
+        <span class="text-gray-800">{{ route.name }}</span>
+        <div class="flex items-center gap-2">
+          <button 
+            (click)="deleteRoute(route.id)"
+            class="text-red-600 hover:text-red-800 transition-colors"
+          >
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
