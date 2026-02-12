@@ -5,6 +5,7 @@ import { NewcityComponent } from './newcity/newcity';
 import { CityComponent } from './city/city';
 import { CompanyComponent } from './company/company';
 import { RouteComponent } from './route/route';
+import { authGuard } from './utils/auth-guard';
 
 export const routes: Routes = [
   { path: '', redirectTo: '/login', pathMatch: 'full' },
@@ -12,6 +13,7 @@ export const routes: Routes = [
   { 
     path: 'dashboard', 
     component: DashboardComponent,
+    canActivate: [authGuard],
     children: [
       { path: 'newcity', component: NewcityComponent },
       { path: 'city', component: CityComponent },
