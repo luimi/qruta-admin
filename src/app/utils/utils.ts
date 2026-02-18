@@ -43,7 +43,7 @@ export class Utils {
     const acl = new Parse.ACL();
     acl.setPublicReadAccess(true);
     roles.forEach((role) => {
-      acl.setWriteAccess(role, true);
+      acl.setRoleWriteAccess(role, true);
     });
     return acl;
   }

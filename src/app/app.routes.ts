@@ -16,7 +16,7 @@ export const routes: Routes = [
     canActivate: [authGuard],
     children: [
       { path: 'newcity', component: NewcityComponent },
-      { path: 'city', component: CityComponent },
+      { path: 'city/:id', component: CityComponent },
       { path: 'company', component: CompanyComponent },
       { path: 'route', component: RouteComponent },
       { path: '', redirectTo: 'newcity', pathMatch: 'full' }
