@@ -61,10 +61,12 @@
       <div *ngIf="companies.length === 0" class="text-gray-500 text-center py-4">
         No hay empresas registradas
       </div>
-
-      <div *ngFor="let company of companies"
+      @for(company of companies; track company.id) {
+      <div
         class="flex items-center justify-between p-3 border border-gray-200 rounded-md">
-        <span class="text-gray-800">{{ company.get('name') }}</span>
+        <a routerLink="/dashboard/company/{{company.id}}" >
+          <span class="text-gray-800 cursor-pointer">{{ company.get('name') }}</span>
+        </a>
         @if(isAdmin) {
         <button (click)="deleteCompany(company)" class="text-red-600 hover:text-red-800 transition-colors">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -75,6 +77,8 @@
         </button>
         }
       </div>
+      }
+
     </div>
   </div>
 </div>

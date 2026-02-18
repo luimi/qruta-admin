@@ -17,7 +17,7 @@ export const routes: Routes = [
     children: [
       { path: 'newcity', component: NewcityComponent },
       { path: 'city/:id', component: CityComponent },
-      { path: 'company', component: CompanyComponent },
+      { path: 'company/:id', component: CompanyComponent },
       { path: 'route', component: RouteComponent },
       { path: '', redirectTo: 'newcity', pathMatch: 'full' }
     ]
