@@ -42,9 +42,9 @@
       <div class="flex items-center justify-between">
         <div class="flex items-center">
           <div class="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center">
-            <span class="text-sm font-medium text-gray-600">{{current?.get("name")[0]}}</span>
+            <span class="text-sm font-medium text-gray-600">{{current?.get("username")[0].toUpperCase()}}</span>
           </div>
-          <span class="ml-3 text-sm font-medium text-gray-700">{{current?.get("name")}}</span>
+          <span class="ml-3 text-sm font-medium text-gray-700">{{current?.get("username")}}</span>
         </div>
         <button (click)="logout()" class="text-gray-500 hover:text-gray-700 transition-colors" title="Cerrar sesión">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

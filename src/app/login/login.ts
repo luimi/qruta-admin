@@ -20,8 +20,8 @@ export class LoginComponent {
   ) {
     //TODO quitar esto
     this.loginForm = this.fb.group({
-      username: ['luimi@live.com', [Validators.required]],
-      password: ['Lmeza@1986', [Validators.required, Validators.minLength(6)]]
+      username: ['admin', [Validators.required]],
+      password: ['qwerty', [Validators.required, Validators.minLength(6)]]
     });
   }
 
