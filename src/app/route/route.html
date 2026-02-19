@@ -1,25 +1,25 @@
 <div class="space-y-6">
   <!-- Route Title -->
-  <div class="bg-white rounded-lg shadow-md p-6">
-    <h1 class="text-2xl font-bold text-gray-800">{{ routeName }}</h1>
+  <div class="bg-white rounded-lg shadow-md p-6 flex">
+    <svg class="w-8 h-8 mr-3 cursor-pointer" (click)="goBack()" xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 640 640">
+      <path
+        d="M73.4 297.4C60.9 309.9 60.9 330.2 73.4 342.7L233.4 502.7C245.9 515.2 266.2 515.2 278.7 502.7C291.2 490.2 291.2 469.9 278.7 457.4L173.3 352L544 352C561.7 352 576 337.7 576 320C576 302.3 561.7 288 544 288L173.3 288L278.7 182.6C291.2 170.1 291.2 149.8 278.7 137.3C266.2 124.8 245.9 124.8 233.4 137.3L73.4 297.3z" />
+    </svg>
+    <h1 class="text-2xl font-bold text-gray-800">{{ route?.get("name") }}</h1>
   </div>
 
   <!-- Tabs -->
   <div class="bg-white rounded-lg shadow-md">
     <div class="border-b border-gray-200">
       <nav class="-mb-px flex space-x-8 px-6">
-        <button
-          *ngFor="let tab of ['info', 'horarios', 'imagenes', 'recorrido', 'configuracion']"
-          (click)="switchTab(tab)"
-          class="py-4 px-1 border-b-2 font-medium text-sm capitalize"
-          [class.border-blue-500]="activeTab === tab"
-          [class.text-blue-600]="activeTab === tab"
-          [class.border-transparent]="activeTab !== tab"
-          [class.text-gray-500]="activeTab !== tab"
-          [class.hover:text-gray-700]="activeTab !== tab"
-          [class.hover:border-gray-300]="activeTab !== tab"
-        >
-          {{ tab === 'info' ? 'Información' : tab === 'horarios' ? 'Horarios' : tab === 'imagenes' ? 'Imágenes' : tab === 'recorrido' ? 'Recorrido' : 'Configuración' }}
+        <button *ngFor="let tab of ['info', 'horarios', 'imagenes', 'recorrido', 'configuracion']"
+          (click)="switchTab(tab)" class="py-4 px-1 border-b-2 font-medium text-sm capitalize"
+          [class.border-blue-500]="activeTab === tab" [class.text-blue-600]="activeTab === tab"
+          [class.border-transparent]="activeTab !== tab" [class.text-gray-500]="activeTab !== tab"
+          [class.hover:text-gray-700]="activeTab !== tab" [class.hover:border-gray-300]="activeTab !== tab">
+          {{ tab === 'info' ? 'Información' : tab === 'horarios' ? 'Horarios' : tab === 'imagenes' ? 'Imágenes' : tab
+          === 'recorrido' ? 'Recorrido' : 'Configuración' }}
         </button>
       </nav>
     </div>
@@ -31,27 +31,18 @@
         <form [formGroup]="infoForm">
           <div class="mb-4">
             <label class="block text-sm font-medium text-gray-700 mb-2">Detalle</label>
-            <input 
-              type="text" 
-              formControlName="detail"
-              class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-            >
+            <input type="text" formControlName="detail"
+              class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
           </div>
 
           <div class="mb-4">
             <label class="block text-sm font-medium text-gray-700 mb-2">Información</label>
-            <textarea 
-              formControlName="information"
-              rows="4"
-              class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-            ></textarea>
+            <textarea formControlName="information" rows="4"
+              class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"></textarea>
           </div>
 
-          <button 
-            type="button"
-            (click)="saveInfo()"
-            class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-          >
+          <button type="button" (click)="saveInfo()"
+            class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
             Guardar
           </button>
         </form>
@@ -66,19 +57,23 @@
             <div class="grid grid-cols-2 gap-4">
               <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Hora del primero</label>
-                <input type="time" formControlName="weekdaysFirstHour" class="w-full px-3 py-2 border border-gray-300 rounded-md">
+                <input type="time" formControlName="weekdaysFirstHour"
+                  class="w-full px-3 py-2 border border-gray-300 rounded-md">
               </div>
               <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Hora del último</label>
-                <input type="time" formControlName="weekdaysLastHour" class="w-full px-3 py-2 border border-gray-300 rounded-md">
+                <input type="time" formControlName="weekdaysLastHour"
+                  class="w-full px-3 py-2 border border-gray-300 rounded-md">
               </div>
               <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Frecuencia hora valle</label>
-                <input type="number" formControlName="weekdaysValley" placeholder="minutos" class="w-full px-3 py-2 border border-gray-300 rounded-md">
+                <input type="number" formControlName="weekdaysValley" placeholder="minutos"
+                  class="w-full px-3 py-2 border border-gray-300 rounded-md">
               </div>
               <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Frecuencia hora pico</label>
-                <input type="number" formControlName="weekdaysPeak" placeholder="minutos" class="w-full px-3 py-2 border border-gray-300 rounded-md">
+                <input type="number" formControlName="weekdaysPeak" placeholder="minutos"
+                  class="w-full px-3 py-2 border border-gray-300 rounded-md">
               </div>
             </div>
           </div>
@@ -89,19 +84,23 @@
             <div class="grid grid-cols-2 gap-4">
               <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Hora del primero</label>
-                <input type="time" formControlName="saturdayFirstHour" class="w-full px-3 py-2 border border-gray-300 rounded-md">
+                <input type="time" formControlName="saturdayFirstHour"
+                  class="w-full px-3 py-2 border border-gray-300 rounded-md">
               </div>
               <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Hora del último</label>
-                <input type="time" formControlName="saturdayLastHour" class="w-full px-3 py-2 border border-gray-300 rounded-md">
+                <input type="time" formControlName="saturdayLastHour"
+                  class="w-full px-3 py-2 border border-gray-300 rounded-md">
               </div>
               <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Frecuencia hora valle</label>
-                <input type="number" formControlName="saturdayValley" placeholder="minutos" class="w-full px-3 py-2 border border-gray-300 rounded-md">
+                <input type="number" formControlName="saturdayValley" placeholder="minutos"
+                  class="w-full px-3 py-2 border border-gray-300 rounded-md">
               </div>
               <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Frecuencia hora pico</label>
-                <input type="number" formControlName="saturdayPeak" placeholder="minutos" class="w-full px-3 py-2 border border-gray-300 rounded-md">
+                <input type="number" formControlName="saturdayPeak" placeholder="minutos"
+                  class="w-full px-3 py-2 border border-gray-300 rounded-md">
               </div>
             </div>
           </div>
@@ -112,28 +111,29 @@
             <div class="grid grid-cols-2 gap-4">
               <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Hora del primero</label>
-                <input type="time" formControlName="sundayFirstHour" class="w-full px-3 py-2 border border-gray-300 rounded-md">
+                <input type="time" formControlName="sundayFirstHour"
+                  class="w-full px-3 py-2 border border-gray-300 rounded-md">
               </div>
               <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Hora del último</label>
-                <input type="time" formControlName="sundayLastHour" class="w-full px-3 py-2 border border-gray-300 rounded-md">
+                <input type="time" formControlName="sundayLastHour"
+                  class="w-full px-3 py-2 border border-gray-300 rounded-md">
               </div>
               <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Frecuencia hora valle</label>
-                <input type="number" formControlName="sundayValley" placeholder="minutos" class="w-full px-3 py-2 border border-gray-300 rounded-md">
+                <input type="number" formControlName="sundayValley" placeholder="minutos"
+                  class="w-full px-3 py-2 border border-gray-300 rounded-md">
               </div>
               <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Frecuencia hora pico</label>
-                <input type="number" formControlName="sundayPeak" placeholder="minutos" class="w-full px-3 py-2 border border-gray-300 rounded-md">
+                <input type="number" formControlName="sundayPeak" placeholder="minutos"
+                  class="w-full px-3 py-2 border border-gray-300 rounded-md">
               </div>
             </div>
           </div>
 
-          <button 
-            type="button"
-            (click)="saveSchedule()"
-            class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-          >
+          <button type="button" (click)="saveSchedule()"
+            class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
             Guardar
           </button>
         </form>
@@ -143,30 +143,26 @@
       <div *ngIf="activeTab === 'imagenes'" class="space-y-6">
         <div>
           <label class="block text-sm font-medium text-gray-700 mb-2">Seleccionar imágenes</label>
-          <input 
-            type="file" 
-            multiple
-            accept="image/*"
-            (change)="onFileSelect($event)"
-            class="w-full px-3 py-2 border border-gray-300 rounded-md"
-          >
+          <input type="file" multiple accept="image/*" (change)="onFileSelect($event)"
+            class="w-full px-3 py-2 border border-gray-300 rounded-md">
         </div>
 
         <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <div *ngFor="let image of images" class="relative group">
-            <img [src]="image.url" [alt]="image.name" class="w-full h-32 object-cover rounded-lg">
-            <div class="absolute inset-0 bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg flex items-center justify-center">
-              <button 
-                (click)="deleteImage(image.id)"
-                class="text-white bg-red-600 hover:bg-red-700 p-2 rounded-full"
-              >
+          @for(image of images; track image.id) {
+          <div class="relative group">
+            <img [src]="image.get('url')" [alt]="image.name" class="w-full h-32 object-cover rounded-lg">
+            @if(isAdmin) {
+            <div
+              class="absolute inset-0 bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg flex items-center justify-center">
+              <button (click)="deleteImage(image)" class="text-white bg-red-600 hover:bg-red-700 p-2 rounded-full">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                 </svg>
               </button>
             </div>
-            <p class="mt-2 text-sm text-gray-600 truncate">{{ image.name }}</p>
+            }
           </div>
+          }
         </div>
       </div>
 
@@ -174,33 +170,24 @@
       <div *ngIf="activeTab === 'recorrido'" class="space-y-6">
         <div class="flex items-center justify-between">
           <div class="flex items-center">
-            <button 
-              (click)="toggleGTFS()"
+            <button (click)="toggleGTFS()"
               class="relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-              [class.bg-blue-600]="isGTFS"
-              [class.bg-gray-200]="!isGTFS"
-            >
+              [class.bg-blue-600]="route.get('osisp')" [class.bg-gray-200]="!route.get('osisp')">
               <span class="sr-only">Toggle GTFS</span>
-              <span 
+              <span
                 class="pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out"
-                [class.translate-x-5]="isGTFS"
-                [class.translate-x-0]="!isGTFS"
-              ></span>
+                [class.translate-x-5]="route.get('osisp')" [class.translate-x-0]="!route.get('osisp')"></span>
             </button>
             <span class="ml-3 text-sm font-medium text-gray-700">GTFS</span>
           </div>
-          
+
           <div class="flex gap-2">
-            <button 
-              (click)="clearMap()"
-              class="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
-            >
+            <button (click)="clearMap()"
+              class="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2">
               Limpiar
             </button>
-            <button 
-              (click)="saveRoute()"
-              class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-            >
+            <button (click)="saveRoute()"
+              class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
               Guardar
             </button>
           </div>
@@ -214,32 +201,28 @@
         <form [formGroup]="routeNameForm">
           <div class="mb-4">
             <label class="block text-sm font-medium text-gray-700 mb-2">Nuevo nombre de ruta</label>
-            <input 
-              type="text" 
-              formControlName="newRouteName"
-              class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-            >
+            <input type="text" formControlName="newRouteName"
+              class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+            <button type="button" (click)="updateRouteName()"
+              class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 mt-4">
+              Guardar
+            </button>
           </div>
         </form>
 
         <div>
           <label class="block text-sm font-medium text-gray-700 mb-2">Estado</label>
           <div class="flex items-center">
-            <button 
-              (click)="toggleStatus()"
+            <button (click)="toggleStatus()"
               class="relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-              [class.bg-blue-600]="isActive"
-              [class.bg-gray-200]="!isActive"
-            >
+              [class.bg-blue-600]="route.get('status')" [class.bg-gray-200]="!route.get('status')">
               <span class="sr-only">Toggle estado</span>
-              <span 
+              <span
                 class="pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out"
-                [class.translate-x-5]="isActive"
-                [class.translate-x-0]="!isActive"
-              ></span>
+                [class.translate-x-5]="route.get('status')" [class.translate-x-0]="!route.get('status')"></span>
             </button>
             <span class="ml-3 text-sm text-gray-600">
-              {{ isActive ? 'Activo' : 'Inactivo' }}
+              {{ route.get('status') ? 'Activo' : 'Inactivo' }}
             </span>
           </div>
         </div>

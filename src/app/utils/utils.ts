@@ -6,6 +6,22 @@ import Parse from 'parse';
 })
 export class Utils {
   roleAdmin: any;
+
+  scheduleModel = [
+    ["weekdaysFirstHour", "lvhi"],
+    ["weekdaysLastHour", "lvhf"],
+    ["weekdaysValley", "lvfv"],
+    ["weekdaysPeak", "lvfp"],
+    ["saturdayFirstHour", "shi"],
+    ["saturdayLastHour", "shf"],
+    ["saturdayValley", "sfv"],
+    ["saturdayPeak", "sfp"],
+    ["sundayFirstHour", "dfhi"],
+    ["sundayLastHour", "dfhf"],
+    ["sundayValley", "dffv"],
+    ["sundayPeak", "dffp"]
+  ]
+
   constructor() { }
   public validate(values: any[], messages: string[], success: any, error: any) {
     let result = true;
@@ -47,4 +63,28 @@ export class Utils {
     });
     return acl;
   }
+  public getSchedule(data: any, type: "local" | "server") {
+    let schedule: any = {}
+    this.scheduleModel.forEach((values) => {
+      schedule[values[type === "local" ? 0 : 1]] = data[values[type === "local" ? 1 : 0]] ? data[values[type === "local" ? 1 : 0]] : ""
+    })
+    return schedule
+  }
+
+  public convertFileToBase64(file: any) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        // The onloadend event is triggered when the reading operation is complete
+        reader.onloadend = () => {
+            resolve(reader.result);
+        };
+        // The onerror event is triggered if an error occurs
+        reader.onerror = (error) => {
+            reject(error);
+        };
+        // Read the file's data as a Data URL (which includes the Base64 string)
+        reader.readAsDataURL(file);
+    });
+};
+
 }

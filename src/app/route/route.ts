@@ -1,20 +1,11 @@
-import { Component, AfterViewInit, ViewChild, ElementRef } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, AfterViewInit, ViewChild, ElementRef, ChangeDetectorRef } from '@angular/core';
+import { CommonModule, Location } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import * as L from 'leaflet';
-
-interface Schedule {
-  firstHour: string;
-  lastHour: string;
-  valleyFrequency: string;
-  peakFrequency: string;
-}
-
-interface Image {
-  id: number;
-  name: string;
-  url: string;
-}
+import { ActivatedRoute } from '@angular/router';
+import Parse from 'parse';
+import { Utils } from '../utils/utils';
+import { LeafletCtrl } from '../utils/leaflet-ctrl';
 
 @Component({
   selector: 'app-route',
@@ -25,78 +16,71 @@ interface Image {
 })
 export class RouteComponent implements AfterViewInit {
   @ViewChild('map') mapContainer!: ElementRef;
-  
-  routeName = 'Ruta Central';
+
+  route: any;
+  images: any[] = [];
+  isAdmin: boolean = false;
+  path: any = { markers: [] };
   activeTab = 'info';
-  isGTFS = false;
-  isActive = true;
-  
+
   // Forms
   infoForm: FormGroup;
   scheduleForm: FormGroup;
   routeNameForm: FormGroup;
-  
-  // Schedules
-  weekdaysSchedule: Schedule = {
-    firstHour: '06:00',
-    lastHour: '22:00',
-    valleyFrequency: '30',
-    peakFrequency: '15'
-  };
-  
-  saturdaySchedule: Schedule = {
-    firstHour: '07:00',
-    lastHour: '21:00',
-    valleyFrequency: '40',
-    peakFrequency: '20'
-  };
-  
-  sundaySchedule: Schedule = {
-    firstHour: '08:00',
-    lastHour: '20:00',
-    valleyFrequency: '45',
-    peakFrequency: '25'
-  };
-  
-  images: Image[] = [
-    { id: 1, name: 'parada1.jpg', url: 'https://via.placeholder.com/100x100' },
-    { id: 2, name: 'parada2.jpg', url: 'https://via.placeholder.com/100x100' }
-  ];
-  
+
   map: L.Map | null = null;
 
-  constructor(private fb: FormBuilder) {
+  constructor(private fb: FormBuilder, private router: ActivatedRoute, private location: Location, private cdr: ChangeDetectorRef, private utils: Utils, private leafletCtrl: LeafletCtrl) {
     this.infoForm = this.fb.group({
-      detail: ['', [Validators.required]],
-      information: ['', [Validators.required]]
+      detail: [''],
+      information: ['']
     });
 
     this.routeNameForm = this.fb.group({
-      newRouteName: [this.routeName, [Validators.required]]
+      newRouteName: ['', [Validators.required]]
     });
 
     this.scheduleForm = this.fb.group({
-      weekdaysFirstHour: [this.weekdaysSchedule.firstHour],
-      weekdaysLastHour: [this.weekdaysSchedule.lastHour],
-      weekdaysValley: [this.weekdaysSchedule.valleyFrequency],
-      weekdaysPeak: [this.weekdaysSchedule.peakFrequency],
-      saturdayFirstHour: [this.saturdaySchedule.firstHour],
-      saturdayLastHour: [this.saturdaySchedule.lastHour],
-      saturdayValley: [this.saturdaySchedule.valleyFrequency],
-      saturdayPeak: [this.saturdaySchedule.peakFrequency],
-      sundayFirstHour: [this.sundaySchedule.firstHour],
-      sundayLastHour: [this.sundaySchedule.lastHour],
-      sundayValley: [this.sundaySchedule.valleyFrequency],
-      sundayPeak: [this.sundaySchedule.peakFrequency]
+      weekdaysFirstHour: [],
+      weekdaysLastHour: [],
+      weekdaysValley: [],
+      weekdaysPeak: [],
+      saturdayFirstHour: [],
+      saturdayLastHour: [],
+      saturdayValley: [],
+      saturdayPeak: [],
+      sundayFirstHour: [],
+      sundayLastHour: [],
+      sundayValley: [],
+      sundayPeak: []
     });
   }
 
   ngAfterViewInit(): void {
     if (this.activeTab === 'recorrido') {
-      this.initializeMap();
+      //this.initializeMap();
     }
-  }
 
+    this.router.params.subscribe(async (_) => {
+      const routeId: string | null = this.router.snapshot.paramMap.get("id");
+      if (!routeId) return
+      this.route = await new Parse.Query('Route').get(routeId);
+      this.images = await new Parse.Query('Image').equalTo('route', this.route).find();
+      this.isAdmin = await this.utils.isAdmin();
+      this.cdr.detectChanges();
+      this.infoForm.setValue({
+        detail: this.route.get('details'),
+        information: this.route.get('info')
+      });
+      if (this.route.get("schedule")) {
+        const schedule = this.utils.getSchedule(this.route.get("schedule"), "local");
+        this.scheduleForm.setValue(schedule)
+      }
+    });
+  }
+  goBack() {
+    this.location.back();
+  }
   switchTab(tab: string): void {
     this.activeTab = tab;
     if (tab === 'recorrido' && !this.map) {
@@ -104,39 +88,43 @@ export class RouteComponent implements AfterViewInit {
     }
   }
 
-  initializeMap(): void {
-    if (!this.mapContainer) return;
-    
-    this.map = L.map(this.mapContainer.nativeElement).setView([40.7128, -74.0060], 13);
-
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '© OpenStreetMap contributors'
-    }).addTo(this.map);
+  async save(type: string) {
+    try {
+      await this.route.save();
+      alert(`${type} guardada`);
+    } catch (e: any) {
+      alert("Error: " + e.message);
+    }
   }
 
   saveInfo(): void {
-    console.log('Saving info:', this.infoForm.value);
-    alert('Información guardada');
+    const { detail, information } = this.infoForm.value;
+    this.route.set("details", detail);
+    this.route.set("info", information);
+    this.save("Información general")
   }
 
   saveSchedule(): void {
-    console.log('Saving schedule:', this.scheduleForm.value);
-    alert('Horarios guardados');
+    const schedule = this.utils.getSchedule(this.scheduleForm.value, "server");
+    this.route.set("schedule", schedule);
+    this.save("Información del horario")
   }
 
   updateRouteName(): void {
     if (this.routeNameForm.valid) {
-      this.routeName = this.routeNameForm.value.newRouteName;
-      alert('Nombre de ruta actualizado');
+      this.route.set("name", this.routeNameForm.value.newRouteName)
+      this.save("Nombre de ruta")
     }
   }
 
   toggleGTFS(): void {
-    this.isGTFS = !this.isGTFS;
+    this.route.set("osisp", !this.route.get("osisp"));
+    this.save("Tipo de ruta")
   }
 
   toggleStatus(): void {
-    this.isActive = !this.isActive;
+    this.route.set("status", !this.route.get("status"));
+    this.save("Estado de la ruta")
   }
 
   clearMap(): void {
@@ -154,20 +142,165 @@ export class RouteComponent implements AfterViewInit {
     alert('Recorrido guardado');
   }
 
-  onFileSelect(event: Event): void {
+  async onFileSelect(event: Event): Promise<void> {
     const input = event.target as HTMLInputElement;
     if (input.files && input.files.length > 0) {
       const file = input.files[0];
-      const newImage: Image = {
-        id: this.images.length + 1,
-        name: file.name,
-        url: URL.createObjectURL(file)
-      };
-      this.images.push(newImage);
+      try {
+        let b64 = await this.utils.convertFileToBase64(file);
+        let upload = await Parse.Cloud.run("uploadImage", { image: b64 });
+        if (upload.success) {
+          const image = this.utils.genericObject("Image");
+          image.set("url", upload.url);
+          image.set("route", this.route);
+          await image.save();
+          alert("Imagen subida");
+          this.images.push(image);
+          this.cdr.detectChanges();
+        } else {
+          alert(upload.message)
+        }
+      } catch (e: any) {
+        alert("Error: " + e.message)
+      }
     }
   }
 
-  deleteImage(id: number): void {
-    this.images = this.images.filter(image => image.id !== id);
+  async deleteImage(image: any): Promise<void> {
+    try {
+      await image.destroy();
+      this.images = this.images.filter((img: any) => img.id !== image.id);
+      alert("Imagen eliminada");
+      this.cdr.detectChanges();
+    } catch (e: any) {
+      alert("Error: " + e.message)
+    }
+  }
+
+  private async initializeMap() {
+    if (!this.mapContainer) return;
+    if (this.path.markers.length > 0) {
+      this.leafletCtrl.map.removeLayer(this.path.line);
+      this.path.markers.forEach((step: any) => {
+        this.leafletCtrl.map.removeLayer(step.marker);
+      });
+      this.path.markers = [];
+      this.path.line = undefined;
+    }
+    const city = this.route.get('city')
+    await city.fetch()
+    const cityLocation = city.get('location');
+    this.leafletCtrl.initialize(this.mapContainer.nativeElement, [cityLocation.latitude, cityLocation.longitude], 12);
+    this.leafletCtrl.addMapEventListener(this.leafletCtrl.events.click, (e: any) => {
+      const l = e.latlng;
+      this.addMarker(l);
+      this.updatePath();
+    });
+    const path = this.route.get('path');
+    if (path) {
+      path.forEach((step: any) => {
+        this.addMarker({ lat: step[0], lng: step[1] }, step[2]);
+      });
+      this.updatePath();
+    }
+    if (this.path.markers.length > 0) {
+      this.leafletCtrl.centerMap(this.path.markers);
+    }
+
+  }
+  private addMarker(l: any, stop?: any, index?: number) {
+    const marker = this.leafletCtrl.addMarker([l.lat, l.lng], true, undefined, 'icons/' + (stop ? 'route-stop.png' : 'route-step.png'), 25);
+    marker.on(this.leafletCtrl.events.dragend, (e) => {
+      this.updatePath();
+    });
+    marker.on(this.leafletCtrl.events.rclick, (e) => {
+      const index = this.path.markers.map((o: any) => { return o.marker; }).indexOf(marker);
+      this.leafletCtrl.map.removeLayer(this.path.markers[index].marker);
+      this.path.markers.splice(index, 1);
+      this.updatePath();
+    });
+    marker.bindPopup('Mas rapido!');
+    marker.on(this.leafletCtrl.events.dblclick, (e) => {
+      const index = this.path.markers.map((o: any) => { return o.marker; }).indexOf(marker);
+      //this.selectedMarker = this.path.markers[index];
+      //this.stopName = this.path.markers[index].stop;
+      //this.stopModal.show();
+    });
+    const step: any = { marker: marker };
+    if (stop) {
+      step.stop = stop;
+    }
+    if (index) {
+      this.path.markers.splice(index, 0, step);
+    } else {
+      this.path.markers.push(step);
+    }
+
+
+
+  }
+  private updatePath() {
+    if (this.path.line) {
+      this.leafletCtrl.map.removeLayer(this.path.line);
+    }
+    if (this.path.markers.length > 1) {
+      const path: any[] = [];
+      this.path.markers.forEach((marker: any, index: number) => {
+        let angle = 0;
+        const l = marker.marker.getLatLng();
+        if (index < this.path.markers.length - 1) {
+          angle = this.leafletCtrl.getAngle(l, this.path.markers[index + 1].marker.getLatLng());
+        }
+        marker.marker.setRotationAngle(angle);
+        path.push([l.lat, l.lng]);
+      });
+      this.path.line = this.leafletCtrl.addPolyline(path, 'red');
+      this.path.line.on(this.leafletCtrl.events.rclick, (e: any) => {
+        const l2l = (location: any) => {
+          return [location.lat, location.lng]
+        }
+        const evtloc = l2l(e.latlng);
+        const nearest = { distance: 9, index: -1 };
+        const markers = this.path.markers;
+        const getMarker = (index: number) => {
+          return markers[index].marker.getLatLng();
+        }
+        for (let i = 1; i < markers.length; i++) {
+          let ab = this.computeDistanceBetween(l2l(getMarker(i - 1)), l2l(getMarker(i)));
+          let accb = this.computeDistanceBetween(l2l(getMarker(i - 1)), evtloc) + this.computeDistanceBetween(l2l(getMarker(i)), evtloc);
+          let newDistance = Math.abs(ab - accb);
+          if (newDistance < nearest.distance) {
+            nearest.distance = newDistance;
+            nearest.index = i;
+          }
+        }
+        this.addMarker(e.latlng, null, nearest.index);
+      });
+    }
+  }
+  addStop() {
+    /*if (this.stopName !== '') {
+      this.selectedMarker.stop = this.stopName;
+      this.selectedMarker.marker.setIcon(this.leafletCtrl.icon('assets/route-stop.png', 15));
+      this.stopName = '';
+    } else {
+      this.selectedMarker.marker.setIcon(this.leafletCtrl.icon('assets/route-step.png', 15));
+      delete this.selectedMarker.stop;
+    }
+    this.stopModal.hide();*/
+  }
+  computeDistanceBetween(from: any, to: any) {
+    let radFromLat = this.toRadians(from[0])
+    let radFromLng = this.toRadians(from[1]);
+    let radToLat = this.toRadians(to[0])
+    let radToLng = this.toRadians(to[1]);
+    return 2 * Math.asin(Math.sqrt(
+      Math.pow(Math.sin((radFromLat - radToLat) / 2), 2)
+      + Math.cos(radFromLat) * Math.cos(radToLat) *
+      Math.pow(Math.sin((radFromLng - radToLng) / 2), 2)
+    )) * 6378137;
+  }
+  toRadians = (angleDegrees: number) => {
+    return angleDegrees * Math.PI / 180.0;
   }
 }

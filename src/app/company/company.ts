@@ -1,14 +1,14 @@
 import { Component } from '@angular/core';
 import { CommonModule, Location } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import Parse from 'parse';
 import { Utils } from '../utils/utils';
 
 @Component({
   selector: 'app-company',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink],
   templateUrl: './company.html',
   styleUrl: './company.css'
 })

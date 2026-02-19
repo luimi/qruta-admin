@@ -29,7 +29,7 @@ export class LeafletCtrl {
   constructor() {
     this.setMarkerRotation();
   }
-  public initialize(mapName: string, location = [4.323485, -73.090613], zoom = 5) {
+  public initialize(mapName: any, location = [4.323485, -73.090613], zoom = 5) {
     if (this.map) {
       this.map.remove();
     }

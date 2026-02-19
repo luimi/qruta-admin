@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
 import { Router } from '@angular/router';
@@ -11,15 +11,16 @@ import Parse from 'parse';
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.css'
 })
-export class DashboardComponent {
+export class DashboardComponent implements OnInit {
   cities: any[] = [];
   current: any;
 
-  constructor(private router: Router){}
+  constructor(private router: Router, private cdr: ChangeDetectorRef){
+    this.current = Parse.User.current();
+  }
 
   ngOnInit() {
     this.getCities();
-    this.current = Parse.User.current();
   }
 
   async logout(){
@@ -27,7 +28,8 @@ export class DashboardComponent {
     this.router.navigate(['/login']);
   }
 
-  async getCities(){
-    this.cities = await new Parse.Query('City').ascending('name').find();
+  async getCities(): Promise<void> {
+    this.cities = await new Parse.Query('City').ascending('name').find()
+    this.cdr.detectChanges(); 
   }
 }
