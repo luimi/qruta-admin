@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { ChangeDetectorRef, Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators, FormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterLink } from '@angular/router';
@@ -21,7 +21,7 @@ export class CityComponent {
 
   companyForm: FormGroup;
 
-  constructor(private fb: FormBuilder, private router: ActivatedRoute, private utils: Utils) {
+  constructor(private fb: FormBuilder, private router: ActivatedRoute, private utils: Utils, private cdr: ChangeDetectorRef) {
     this.companyForm = this.fb.group({
       companyName: ['', [Validators.required]]
     });
@@ -34,8 +34,9 @@ export class CityComponent {
       if (!cityId) return
       this.city = await new Parse.Query('City').include('massive').get(cityId!);
       this.massive = this.city.get('massive') ? this.city.get('massive').id : undefined;
-      this.getCompanies();
+      await this.getCompanies();
       this.isAdmin = await this.utils.isAdmin();
+      this.cdr.detectChanges(); 
     });
   }
 
@@ -50,7 +51,8 @@ export class CityComponent {
     try {
       await company.save();
       alert("Nueva empresa guardada");
-      this.getCompanies()
+      this.cdr.detectChanges(); 
+      await this.getCompanies()
       this.companyForm.reset();
     } catch (e: any) {
       alert("Error: " + e.message)

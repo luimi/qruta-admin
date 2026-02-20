@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { ChangeDetectorRef, Component } from '@angular/core';
 import { CommonModule, Location } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, RouterLink } from '@angular/router';
@@ -20,7 +20,7 @@ export class CompanyComponent {
 
   routeForm: FormGroup;
 
-  constructor(private fb: FormBuilder, private router: ActivatedRoute, private utils: Utils, private location: Location) {
+  constructor(private fb: FormBuilder, private router: ActivatedRoute, private utils: Utils, private location: Location, private cdr: ChangeDetectorRef) {
     this.routeForm = this.fb.group({
       routeName: ['', [Validators.required]]
     });
@@ -31,8 +31,9 @@ export class CompanyComponent {
       const companyId: string | null = this.router.snapshot.paramMap.get("id");
       if (!companyId) return
       this.company = await new Parse.Query('Company').include('city').get(companyId);
-      this.loadRoutes();
+      await this.loadRoutes();
       this.isAdmin = await this.utils.isAdmin();
+      this.cdr.detectChanges(); 
     });
   }
   async loadRoutes() {
@@ -54,6 +55,7 @@ export class CompanyComponent {
       await route.save();
       this.routes.push(route);
       alert("Ruta guardada");
+      this.cdr.detectChanges(); 
       this.routeForm.reset();
     } catch (e: any) {
       alert("Error: " + e.message)
@@ -65,6 +67,7 @@ export class CompanyComponent {
       await route.destroy();
       alert("Ruta eliminada");
       this.routes = this.routes.filter((obj:any) => obj.id !== route.id)
+      this.cdr.detectChanges(); 
     } catch (e: any) {
       alert("Error: " + e.message)
     }
