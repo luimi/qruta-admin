@@ -22,6 +22,7 @@ export class RouteComponent implements AfterViewInit {
   isAdmin: boolean = false;
   path: any = { markers: [] };
   activeTab = 'info';
+  currentMarker: any;
 
   // Forms
   infoForm: FormGroup;
@@ -128,18 +129,27 @@ export class RouteComponent implements AfterViewInit {
   }
 
   clearMap(): void {
-    if (this.map) {
-      this.map.eachLayer((layer) => {
-        if (layer instanceof L.Marker || layer instanceof L.Polyline) {
-          this.map!.removeLayer(layer);
-        }
-      });
-    }
+    this.leafletCtrl.map.removeLayer(this.path.line);
+    this.path.markers.forEach((step: any) => {
+      this.leafletCtrl.map.removeLayer(step.marker);
+    });
+    this.path.markers = [];
+    this.path.line = undefined;
+    this.updatePath();
   }
 
   saveRoute(): void {
-    console.log('Saving route data');
-    alert('Recorrido guardado');
+    const path: any[] = [];
+    this.path.markers.forEach((step: any) => {
+      const l = step.marker.getLatLng();
+      const location = [l.lat, l.lng];
+      if (step.stop) {
+        location.push(step.stop);
+      }
+      path.push(location);
+    });
+    this.route.set('path', path);
+    this.save("Recorrido de la ruta")
   }
 
   async onFileSelect(event: Event): Promise<void> {
@@ -219,10 +229,16 @@ export class RouteComponent implements AfterViewInit {
       this.path.markers.splice(index, 1);
       this.updatePath();
     });
-    marker.bindPopup('Mas rapido!');
-    marker.on(this.leafletCtrl.events.dblclick, (e) => {
+    marker.on(this.leafletCtrl.events.click, (e) => {
       const index = this.path.markers.map((o: any) => { return o.marker; }).indexOf(marker);
-      //this.selectedMarker = this.path.markers[index];
+      this.currentMarker = this.path.markers[index];
+      this.cdr.detectChanges()
+    })
+    //marker.bindPopup('Mas rapido!');
+    marker.on(this.leafletCtrl.events.dblclick, (e) => {
+      
+      console.log(this.path)
+      //this.selectedMarker = 
       //this.stopName = this.path.markers[index].stop;
       //this.stopModal.show();
     });
@@ -278,16 +294,15 @@ export class RouteComponent implements AfterViewInit {
       });
     }
   }
-  addStop() {
-    /*if (this.stopName !== '') {
-      this.selectedMarker.stop = this.stopName;
-      this.selectedMarker.marker.setIcon(this.leafletCtrl.icon('assets/route-stop.png', 15));
-      this.stopName = '';
+  addStop(event: any) {
+    const text = event.target.value;
+    if (text !== '') {
+      this.currentMarker.stop = text;
+      this.currentMarker.marker.setIcon(this.leafletCtrl.icon('icons/route-stop.png', 25));
     } else {
-      this.selectedMarker.marker.setIcon(this.leafletCtrl.icon('assets/route-step.png', 15));
-      delete this.selectedMarker.stop;
+      this.currentMarker.marker.setIcon(this.leafletCtrl.icon('icons/route-step.png', 25));
+      delete this.currentMarker.stop;
     }
-    this.stopModal.hide();*/
   }
   computeDistanceBetween(from: any, to: any) {
     let radFromLat = this.toRadians(from[0])
