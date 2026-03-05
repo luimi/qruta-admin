@@ -18,10 +18,9 @@ export class LoginComponent {
     private fb: FormBuilder,
     private router: Router
   ) {
-    //TODO quitar esto
     this.loginForm = this.fb.group({
-      username: ['admin', [Validators.required]],
-      password: ['qwerty', [Validators.required, Validators.minLength(6)]]
+      username: ['', [Validators.required]],
+      password: ['', [Validators.required, Validators.minLength(6)]]
     });
   }
 
