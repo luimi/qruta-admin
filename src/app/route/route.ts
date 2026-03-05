@@ -58,10 +58,6 @@ export class RouteComponent implements AfterViewInit {
   }
 
   ngAfterViewInit(): void {
-    if (this.activeTab === 'recorrido') {
-      //this.initializeMap();
-    }
-
     this.router.params.subscribe(async (_) => {
       const routeId: string | null = this.router.snapshot.paramMap.get("id");
       if (!routeId) return
@@ -178,8 +174,8 @@ export class RouteComponent implements AfterViewInit {
 
   async deleteImage(image: any): Promise<void> {
     try {
-      await image.destroy();
       this.images = this.images.filter((img: any) => img.id !== image.id);
+      await image.destroy();
       alert("Imagen eliminada");
       this.cdr.detectChanges();
     } catch (e: any) {
@@ -234,14 +230,6 @@ export class RouteComponent implements AfterViewInit {
       this.currentMarker = this.path.markers[index];
       this.cdr.detectChanges()
     })
-    //marker.bindPopup('Mas rapido!');
-    marker.on(this.leafletCtrl.events.dblclick, (e) => {
-      
-      console.log(this.path)
-      //this.selectedMarker = 
-      //this.stopName = this.path.markers[index].stop;
-      //this.stopModal.show();
-    });
     const step: any = { marker: marker };
     if (stop) {
       step.stop = stop;
