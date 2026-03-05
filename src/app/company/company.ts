@@ -37,7 +37,7 @@ export class CompanyComponent {
     });
   }
   async loadRoutes() {
-    this.routes = await new Parse.Query('Route').equalTo('company', this.company).select('name').ascending('name').find();
+    this.routes = await new Parse.Query('Route').equalTo('company', this.company).select('name','details').ascending('name').find();
   }
   async addRoute() {
     if (!this.routeForm.valid) return;
