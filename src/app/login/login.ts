@@ -24,6 +24,12 @@ export class LoginComponent {
     });
   }
 
+  ngOnInit() {
+    if(Parse.User.current()) {
+      this.router.navigate(['/dashboard']);
+    }
+  }
+
   async onSubmit(): Promise<void> {
     if (this.loginForm.valid) {
       const { username, password } = this.loginForm.value
