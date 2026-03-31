@@ -66,8 +66,8 @@ export class RouteComponent implements AfterViewInit {
       this.isAdmin = await this.utils.isAdmin();
       this.cdr.detectChanges();
       this.infoForm.setValue({
-        detail: this.route.get('details'),
-        information: this.route.get('info')
+        detail: this.route.get('details') || "",
+        information: this.route.get('info') || ""
       });
       if (this.route.get("schedule")) {
         const schedule = this.utils.getSchedule(this.route.get("schedule"), "local");
