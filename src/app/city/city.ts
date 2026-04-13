@@ -15,6 +15,9 @@ import { Utils } from '../utils/utils';
 export class CityComponent {
   city: any;
   massive: string = "";
+  systemType: string = "";
+  promotionalImage: string = "";
+  moreInfoLink: string = "";
   isAdmin: boolean = false;
   companies: any[] = [];
 
@@ -34,6 +37,9 @@ export class CityComponent {
       if (!cityId) return
       this.city = await new Parse.Query('City').include('massive').get(cityId!);
       this.massive = this.city.get('massive') ? this.city.get('massive').id : undefined;
+      this.systemType = this.city.get('model') || '';
+      this.promotionalImage = this.city.get('image') || '';
+      this.moreInfoLink = this.city.get('infoLink') || '';
       await this.getCompanies();
       this.isAdmin = await this.utils.isAdmin();
       this.cdr.detectChanges(); 
@@ -76,6 +82,18 @@ export class CityComponent {
   status() {
     this.city.set('status', !this.city.get('status'));
     this.city.save();
+  }
+
+  async saveConfig() {
+    this.city.set('model', this.systemType);
+    this.city.set('image', this.promotionalImage);
+    this.city.set('infoLink', this.moreInfoLink);
+    try {
+      await this.city.save();
+      alert("Configuración guardada");
+    } catch (e: any) {
+      alert("Error: " + e.message)
+    }
   }
   async getCompanies() {
     this.companies = await new Parse.Query('Company').equalTo('city', this.city).ascending('name').find();
