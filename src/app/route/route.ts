@@ -31,6 +31,27 @@ export class RouteComponent implements AfterViewInit {
 
   map: L.Map | null = null;
 
+  transportTypes = [
+    { value: 'motorcycle', label: 'Motocicleta', icon: 'icons/transport/motorcycle.svg' },
+    { value: 'car', label: 'Carro', icon: 'icons/transport/car.svg' },
+    { value: 'cable', label: 'Cable', icon: 'icons/transport/cable.svg' },
+    { value: 'bus', label: 'Bus', icon: 'icons/transport/bus.svg' },
+    { value: 'train', label: 'Tren', icon: 'icons/transport/train.svg' },
+    { value: 'ferry', label: 'Ferry', icon: 'icons/transport/ferry.svg' },
+    { value: 'ship', label: 'Barco', icon: 'icons/transport/ship.svg' }
+  ];
+
+  paymentTypes = [
+    { value: 'cash', label: 'Efectivo', icon: 'icons/payment/money.svg' },
+    { value: 'card', label: 'Tarjeta', icon: 'icons/payment/card.svg' },
+    { value: 'nfc', label: 'NFC', icon: 'icons/payment/nfc.svg' },
+    { value: 'qr', label: 'QR', icon: 'icons/payment/qr.svg' },
+    { value: 'ticket', label: 'Ticket', icon: 'icons/payment/ticket.svg' }
+  ];
+
+  selectedTransport: string = '';
+  selectedPayments: string[] = [];
+
   constructor(private fb: FormBuilder, private router: ActivatedRoute, private location: Location, private cdr: ChangeDetectorRef, private utils: Utils, private leafletCtrl: LeafletCtrl) {
     this.infoForm = this.fb.group({
       detail: [''],
@@ -73,7 +94,30 @@ export class RouteComponent implements AfterViewInit {
         const schedule = this.utils.getSchedule(this.route.get("schedule"), "local");
         this.scheduleForm.setValue(schedule)
       }
+      this.selectedTransport = this.route.get('type') || '';
+      this.selectedPayments = this.route.get('payment') || [];
     });
+  }
+
+  selectTransport(type: string): void {
+    this.selectedTransport = type;
+    this.route.set('type', type);
+    this.save();
+  }
+
+  togglePayment(payment: string): void {
+    const index = this.selectedPayments.indexOf(payment);
+    if (index > -1) {
+      this.selectedPayments.splice(index, 1);
+    } else {
+      this.selectedPayments.push(payment);
+    }
+    this.route.set('payment', this.selectedPayments);
+    this.save();
+  }
+
+  isPaymentSelected(payment: string): boolean {
+    return this.selectedPayments.indexOf(payment) > -1;
   }
   goBack() {
     this.location.back();
@@ -85,10 +129,10 @@ export class RouteComponent implements AfterViewInit {
     }
   }
 
-  async save(type: string) {
+  async save(type?: string) {
     try {
       await this.route.save();
-      alert(`${type} guardada`);
+      if(type) alert(`${type} guardada`);
     } catch (e: any) {
       alert("Error: " + e.message);
     }

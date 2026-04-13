@@ -228,6 +228,42 @@
             </span>
           </div>
         </div>
+
+        <!-- Tipo de Transporte -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-3">Tipo de transporte</label>
+          <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-3">
+            @for(type of transportTypes; track type.value) {
+            <button (click)="selectTransport(type.value)"
+              class="flex flex-col items-center p-3 border rounded-lg transition-colors"
+              [class.border-blue-500]="selectedTransport === type.value"
+              [class.bg-blue-50]="selectedTransport === type.value"
+              [class.border-gray-300]="selectedTransport !== type.value"
+              [class.hover:bg-gray-50]="selectedTransport !== type.value">
+              <img [src]="type.icon" [alt]="type.label" class="w-8 h-8 mb-1">
+              <span class="text-xs text-gray-700">{{ type.label }}</span>
+            </button>
+            }
+          </div>
+        </div>
+
+        <!-- Métodos de Pago -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-3">Métodos de pago</label>
+          <div class="grid grid-cols-2 md:grid-cols-5 gap-3">
+            @for(payment of paymentTypes; track payment.value) {
+            <button (click)="togglePayment(payment.value)"
+              class="flex flex-col items-center p-3 border rounded-lg transition-colors"
+              [class.border-blue-500]="isPaymentSelected(payment.value)"
+              [class.bg-blue-50]="isPaymentSelected(payment.value)"
+              [class.border-gray-300]="!isPaymentSelected(payment.value)"
+              [class.hover:bg-gray-50]="!isPaymentSelected(payment.value)">
+              <img [src]="payment.icon" [alt]="payment.label" class="w-8 h-8 mb-1">
+              <span class="text-xs text-gray-700">{{ payment.label }}</span>
+            </button>
+            }
+          </div>
+        </div>
       </div>
     </div>
   </div>
