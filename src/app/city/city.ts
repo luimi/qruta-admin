@@ -48,6 +48,16 @@ export class CityComponent {
   newPaymentName: string = '';
   newCoverageName: string = '';
 
+  placeMarks: any[] = [];
+
+  newPlaceTitle: string = '';
+  newPlaceCityName: string = '';
+  newPlaceLat: string = '';
+  newPlaceLng: string = '';
+  newPlaceIcon: string = '';
+  newPlaceHeight: number = 45;
+  newPlaceWidth: number = 45;
+
   fareOptions = [
     { value: 'information.fares.days.all', label: 'Todos los dias' },
     { value: 'information.fares.days.m2f', label: 'Lunes a viernes' },
@@ -100,6 +110,72 @@ export class CityComponent {
     this.fares = this.city.get('fares') || [];
     this.payments = this.city.get('payments') || [];
     this.coverages = this.city.get('coverage') || [];
+    this.loadPlaceMarks();
+  }
+
+  async loadPlaceMarks() {
+    this.placeMarks = await new Parse.Query('PlaceMark')
+      .equalTo('city', this.city)
+      .find();
+      this.newPlaceCityName = this.city.get("name")
+  }
+
+  async addPlaceMark() {
+    if (!this.newPlaceTitle || !this.newPlaceCityName || !this.newPlaceLat || !this.newPlaceLng) {
+      alert('Por favor complete todos los campos requeridos');
+      return;
+    }
+
+    const placeMark = this.utils.genericObject('PlaceMark');
+    placeMark.set('title', this.newPlaceTitle);
+    placeMark.set('cityName', this.newPlaceCityName);
+    placeMark.set('location', new Parse.GeoPoint(parseFloat(this.newPlaceLat), parseFloat(this.newPlaceLng)));
+    placeMark.set('icon', this.newPlaceIcon || '');
+    placeMark.set('size', [this.newPlaceHeight, this.newPlaceWidth]);
+    placeMark.set('status', false);
+    placeMark.set('city', this.city);
+
+    const acl = await this.utils.getACL();
+    placeMark.setACL(acl);
+
+    try {
+      await placeMark.save();
+      await this.loadPlaceMarks();
+      this.resetPlaceForm();
+      alert('Lugar guardado');
+    } catch (e: any) {
+      alert('Error: ' + e.message);
+    }
+  }
+
+  resetPlaceForm() {
+    this.newPlaceTitle = '';
+    this.newPlaceCityName = this.city.get('name');
+    this.newPlaceLat = '';
+    this.newPlaceLng = '';
+    this.newPlaceIcon = '';
+    this.newPlaceHeight = 45;
+    this.newPlaceWidth = 45;
+    this.cdr.detectChanges(); 
+  }
+
+  async togglePlaceStatus(placeMark: any) {
+    placeMark.set('status', !placeMark.get('status'));
+    try {
+      await placeMark.save();
+    } catch (e: any) {
+      alert('Error: ' + e.message);
+    }
+  }
+
+  async deletePlaceMark(placeMark: any) {
+    try {
+      await placeMark.destroy();
+      await this.loadPlaceMarks();
+      alert('PlaceMark eliminado');
+    } catch (e: any) {
+      alert('Error: ' + e.message);
+    }
   }
 
   setTab(tab: string) {
