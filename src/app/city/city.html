@@ -4,9 +4,52 @@
     <h1 class="text-2xl font-bold text-gray-800">{{ city?.get('name') }}</h1>
   </div>
 
-  <!-- City Configuration -->
+  <!-- Tabs -->
   @if(city && isAdmin) {
   <div class="bg-white rounded-lg shadow-md p-6">
+    <div class="border-b border-gray-200 mb-6">
+      <nav class="-mb-px flex space-x-4">
+        <button (click)="setTab('informacion')"
+          class="py-2 px-1 border-b-2 font-medium text-sm"
+          [class.border-blue-500]="activeTab === 'informacion'"
+          [class.text-blue-600]="activeTab === 'informacion'"
+          [class.border-transparent]="activeTab !== 'informacion'"
+          [class.text-gray-500]="activeTab !== 'informacion'"
+          [class.hover:text-gray-700]="activeTab !== 'informacion'">
+          Información
+        </button>
+        <button (click)="setTab('tarifas')"
+          class="py-2 px-1 border-b-2 font-medium text-sm"
+          [class.border-blue-500]="activeTab === 'tarifas'"
+          [class.text-blue-600]="activeTab === 'tarifas'"
+          [class.border-transparent]="activeTab !== 'tarifas'"
+          [class.text-gray-500]="activeTab !== 'tarifas'"
+          [class.hover:text-gray-700]="activeTab !== 'tarifas'">
+          Tarifas
+        </button>
+        <button (click)="setTab('metodos')"
+          class="py-2 px-1 border-b-2 font-medium text-sm"
+          [class.border-blue-500]="activeTab === 'metodos'"
+          [class.text-blue-600]="activeTab === 'metodos'"
+          [class.border-transparent]="activeTab !== 'metodos'"
+          [class.text-gray-500]="activeTab !== 'metodos'"
+          [class.hover:text-gray-700]="activeTab !== 'metodos'">
+          Métodos de pago
+        </button>
+        <button (click)="setTab('cobertura')"
+          class="py-2 px-1 border-b-2 font-medium text-sm"
+          [class.border-blue-500]="activeTab === 'cobertura'"
+          [class.text-blue-600]="activeTab === 'cobertura'"
+          [class.border-transparent]="activeTab !== 'cobertura'"
+          [class.text-gray-500]="activeTab !== 'cobertura'"
+          [class.hover:text-gray-700]="activeTab !== 'cobertura'">
+          Cobertura
+        </button>
+      </nav>
+    </div>
+
+    <!-- Tab: Información -->
+    @if(activeTab === 'informacion') {
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
       <div>
         <label class="block text-sm font-medium text-gray-700 mb-2">Masivo</label>
@@ -65,6 +108,166 @@
         Guardar cambios
       </button>
     </div>
+    }
+
+    <!-- Tab: Tarifas -->
+    @if(activeTab === 'tarifas') {
+    <div>
+      <!-- Add Fare Form -->
+      <div class="mb-6 p-4 bg-gray-50 rounded-md">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div class="flex items-center">
+            <input type="checkbox" [(ngModel)]="newFareManual" (change)="toggleFareManual()" 
+              class="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+            <label class="ml-2 text-sm text-gray-700">Manual</label>
+          </div>
+          
+          @if(newFareManual) {
+          <div>
+            <input type="text" [(ngModel)]="newFareName" placeholder="Nombre de tarifa"
+              class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+          </div>
+          } @else {
+          <div>
+            <select [(ngModel)]="newFareDayType"
+              class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+              @for(option of fareOptions; track option.value) {
+              <option [value]="option.value">{{option.label}}</option>
+              }
+            </select>
+          </div>
+          }
+
+          <div>
+            <input type="text" [(ngModel)]="newFareValue" placeholder="Valor"
+              class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+          </div>
+        </div>
+        
+        <div class="mt-4 flex justify-end">
+          <button type="button" (click)="addFare()"
+            class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+            Agregar tarifa
+          </button>
+        </div>
+      </div>
+
+      <!-- Fares List -->
+      <div class="space-y-2">
+        <div *ngIf="fares.length === 0" class="text-gray-500 text-center py-4">
+          No hay tarifas registradas
+        </div>
+        @for(fare of fares; track fare.name; let i = $index) {
+        <div class="flex items-center justify-between p-3 border border-gray-200 rounded-md">
+          <div class="flex-1">
+            <span class="text-gray-800 font-medium">{{ fareOptionsObj[fare.name] ? fareOptionsObj[fare.name].label : fare.name }}</span>
+            <span class="ml-2 text-gray-600">- {{ fare.value }}</span>
+          </div>
+          <button (click)="removeFare(i)" class="text-red-600 hover:text-red-800 transition-colors">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16">
+              </path>
+            </svg>
+          </button>
+        </div>
+        }
+      </div>
+    </div>
+    }
+
+    <!-- Tab: Métodos de Pago -->
+    @if(activeTab === 'metodos') {
+    <div>
+      <!-- Add Payment Form -->
+      <div class="mb-6 p-4 bg-gray-50 rounded-md">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Método de pago</label>
+            <select [(ngModel)]="newPaymentName"
+              class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+              <option value=""></option>
+              @for(option of paymentOptions; track option.value) {
+              <option [value]="option.value">{{option.label}}</option>
+              }
+            </select>
+          </div>
+        </div>
+        
+        <div class="mt-4 flex justify-end">
+          <button type="button" (click)="addPayment()"
+            class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+            Agregar método
+          </button>
+        </div>
+      </div>
+
+      <!-- Payments List -->
+      <div class="space-y-2">
+        <div *ngIf="payments.length === 0" class="text-gray-500 text-center py-4">
+          No hay métodos de pago registrados
+        </div>
+        @for(payment of payments; track payment.name; let i = $index) {
+        <div class="flex items-center justify-between p-3 border border-gray-200 rounded-md">
+          <div class="flex items-center">
+            <span class="text-gray-800">{{ paymentOptionsObj[payment.name].label }}</span>
+          </div>
+          <button (click)="removePayment(i)" class="text-red-600 hover:text-red-800 transition-colors">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16">
+              </path>
+            </svg>
+          </button>
+        </div>
+        }
+      </div>
+    </div>
+    }
+
+    <!-- Tab: Cobertura -->
+    @if(activeTab === 'cobertura') {
+    <div>
+      <!-- Add Coverage Form -->
+      <div class="mb-6 p-4 bg-gray-50 rounded-md">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Zona de cobertura</label>
+            <input type="text" [(ngModel)]="newCoverageName" placeholder="Nombre de la zona"
+              class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+          </div>
+        </div>
+        
+        <div class="mt-4 flex justify-end">
+          <button type="button" (click)="addCoverage()"
+            class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+            Agregar cobertura
+          </button>
+        </div>
+      </div>
+
+      <!-- Coverages List -->
+      <div class="space-y-2">
+        <div *ngIf="coverages.length === 0" class="text-gray-500 text-center py-4">
+          No hay zonas de cobertura registradas
+        </div>
+        @for(coverage of coverages; track coverage.name; let i = $index) {
+        <div class="flex items-center justify-between p-3 border border-gray-200 rounded-md">
+          <div class="flex-1">
+            <span class="text-gray-800">{{ coverage.name }}</span>
+          </div>
+          <button (click)="removeCoverage(i)" class="text-red-600 hover:text-red-800 transition-colors">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16">
+              </path>
+            </svg>
+          </button>
+        </div>
+        }
+      </div>
+    </div>
+    }
   </div>
   }
 
