@@ -76,7 +76,7 @@ export class CityComponent {
   paymentOptions = [
     { value: 'cash', label: 'Efectivo', icon: 'cash-outline' },
     { value: 'card', label: 'Tarjeta', icon: 'card-outline' },
-    { value: 'smartPhone', label: 'Smartphone', icon: 'phone-portrait-outline' },
+    { value: 'smarthPhone', label: 'Teléfono inteligente', icon: 'phone-portrait-outline' },
     { value: 'QR', label: 'QR', icon: 'qr-code-outline' },
     { value: 'RFC', label: 'RFC', icon: 'radio-outline' }
   ];
