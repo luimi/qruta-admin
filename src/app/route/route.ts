@@ -51,6 +51,7 @@ export class RouteComponent implements AfterViewInit {
 
   selectedTransport: string = '';
   selectedPayments: string[] = [];
+  companyAssets: any[] = [];
 
   constructor(private fb: FormBuilder, private router: ActivatedRoute, private location: Location, private cdr: ChangeDetectorRef, private utils: Utils, private leafletCtrl: LeafletCtrl) {
     this.infoForm = this.fb.group({
@@ -96,7 +97,33 @@ export class RouteComponent implements AfterViewInit {
       }
       this.selectedTransport = this.route.get('type') || '';
       this.selectedPayments = this.route.get('payment') || [];
+      await this.loadCompanyAssets();
     });
+  }
+
+  async loadCompanyAssets() {
+    const company = this.route.get('company');
+    if (company) {
+      this.companyAssets = await new Parse.Query('Asset').equalTo('company', company).find();
+    }
+  }
+
+  async addImageFromAsset(assetUrl: string) {
+    const existingImage = this.images.find(img => img.get('url') === assetUrl);
+    if (existingImage) {
+      alert('Esta imagen ya existe en la ruta');
+      return;
+    }
+
+    const image = this.utils.genericObject('Image');
+    image.set('url', assetUrl);
+    image.set('route', this.route);
+    const acl = await this.utils.getACL();
+    image.setACL(acl);
+    await image.save();
+    this.images.push(image);
+    alert('Imagen agregada');
+    this.cdr.detectChanges();
   }
 
   selectTransport(type: string): void {
@@ -132,7 +159,7 @@ export class RouteComponent implements AfterViewInit {
   async save(type?: string) {
     try {
       await this.route.save();
-      if(type) alert(`${type} guardada`);
+      if (type) alert(`${type} guardada`);
     } catch (e: any) {
       alert("Error: " + e.message);
     }
