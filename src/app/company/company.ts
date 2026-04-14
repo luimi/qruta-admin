@@ -17,6 +17,7 @@ export class CompanyComponent {
   isAdmin: boolean = false;
   companyName = 'Transportes A';
   routes: any[] = [];
+  assets: any[] = [];
 
   routeForm: FormGroup;
 
@@ -33,8 +34,50 @@ export class CompanyComponent {
       this.company = await new Parse.Query('Company').include('city').get(companyId);
       await this.loadRoutes();
       this.isAdmin = await this.utils.isAdmin();
+      await this.loadAssets();
       this.cdr.detectChanges(); 
     });
+  }
+
+  async loadAssets() {
+    this.assets = await new Parse.Query('Asset').equalTo('company', this.company).find();
+  }
+
+  async onFileSelect(event: Event): Promise<void> {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files.length > 0) {
+      const file = input.files[0];
+      try {
+        let b64 = await this.utils.convertFileToBase64(file);
+        let upload = await Parse.Cloud.run("uploadImage", { image: b64 });
+        if (upload.success) {
+          const asset = this.utils.genericObject("Asset");
+          asset.set("url", upload.url);
+          asset.set("company", this.company);
+          const acl = await this.utils.getACL();
+          asset.setACL(acl);
+          await asset.save();
+          await this.loadAssets();
+          alert("Imagen subida");
+          this.cdr.detectChanges();
+        } else {
+          alert(upload.message)
+        }
+      } catch (e: any) {
+        alert("Error: " + e.message)
+      }
+    }
+  }
+
+  async deleteAsset(asset: any) {
+    try {
+      await asset.destroy();
+      await this.loadAssets();
+      alert("Imagen eliminada");
+      this.cdr.detectChanges(); 
+    } catch (e: any) {
+      alert("Error: " + e.message)
+    }
   }
   async loadRoutes() {
     this.routes = await new Parse.Query('Route').equalTo('company', this.company).select('name','details','status').ascending('name').find();

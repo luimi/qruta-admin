@@ -203,6 +203,8 @@ export class RouteComponent implements AfterViewInit {
           const image = this.utils.genericObject("Image");
           image.set("url", upload.url);
           image.set("route", this.route);
+          const acl = await this.utils.getACL();
+          image.setACL(acl);
           await image.save();
           alert("Imagen subida");
           this.images.push(image);
