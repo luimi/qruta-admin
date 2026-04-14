@@ -73,7 +73,7 @@
         No hay rutas registradas
       </div>
 
-      @for(route of routes; track route.id) {
+      @for(route of filterArray(routes, 'name', routeForm.value.routeName); track route.id) {
       <div class="flex items-center justify-between p-3 border border-gray-200 rounded-md hover:bg-gray-50 ">
         <span routerLink="/dashboard/route/{{route.id}}" class="text-gray-800 cursor-pointer flex flex-1">{{ route.get("name") }} {{
           route.get("details") ? '-':'' }} {{ route.get("details") }}</span>
