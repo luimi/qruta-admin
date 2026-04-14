@@ -330,4 +330,7 @@ export class CityComponent {
       alert("Error: " + e.message)
     }
   }
+  filterArray(array: any[], param: string,text: string) {
+    return array.filter((item) => item.get(param).toLowerCase().includes(text))
+  }
 }

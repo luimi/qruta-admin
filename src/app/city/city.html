@@ -401,7 +401,7 @@
       <div *ngIf="companies.length === 0" class="text-gray-500 text-center py-4">
         No hay empresas registradas
       </div>
-      @for(company of companies; track company.id) {
+      @for(company of filterArray(companies, 'name', companyForm.value.companyName); track company.id) {
       <div
         class="flex items-center justify-between p-3 border border-gray-200 rounded-md">
         <a routerLink="/dashboard/company/{{company.id}}" class="flex flex-1" >
