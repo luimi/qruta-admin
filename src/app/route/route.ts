@@ -379,4 +379,40 @@ export class RouteComponent implements AfterViewInit {
   toRadians = (angleDegrees: number) => {
     return angleDegrees * Math.PI / 180.0;
   }
+  downloadKML(): void {
+    const path = this.route.get('path');
+    if (!path || path.length === 0) {
+      alert('No hay recorrido para descargar');
+      return;
+    }
+    const routeName = this.route.get('name') || 'ruta';
+    let coordinates = '';
+    path.forEach((step: any) => {
+      coordinates += `${step[1]},${step[0]},0\n`;
+    });
+    const kml = `<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2">
+<Document>
+  <name>${routeName}</name>
+  <Folder>
+    <name>Recorrido</name>
+    <Placemark>
+      <name>${routeName}</name>
+      <LineString>
+        <coordinates>
+${coordinates}
+        </coordinates>
+      </LineString>
+    </Placemark>
+  </Folder>
+</Document>
+</kml>`;
+    const blob = new Blob([kml], { type: 'application/vnd.google-earth.kml+xml' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${routeName}.kml`;
+    a.click();
+    URL.revokeObjectURL(url);
+  }
 }
