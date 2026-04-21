@@ -55,8 +55,8 @@ export class CityComponent {
   newPlaceLat: string = '';
   newPlaceLng: string = '';
   newPlaceIcon: string = '';
-  newPlaceHeight: number = 45;
-  newPlaceWidth: number = 45;
+  newPlaceHeight: number = 30;
+  newPlaceWidth: number = 30;
 
   fareOptions = [
     { value: 'information.fares.days.all', label: 'Todos los dias' },
@@ -154,8 +154,8 @@ export class CityComponent {
     this.newPlaceLat = '';
     this.newPlaceLng = '';
     this.newPlaceIcon = '';
-    this.newPlaceHeight = 45;
-    this.newPlaceWidth = 45;
+    this.newPlaceHeight = 30;
+    this.newPlaceWidth = 30;
     this.cdr.detectChanges(); 
   }
 
