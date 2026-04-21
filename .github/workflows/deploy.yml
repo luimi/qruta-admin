@@ -1,0 +1,37 @@
+name: Deploy to FTP
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build
+        run: npm run build
+        env:
+          NG_APP_SERVER_URL: ${{ secrets.NG_APP_SERVER_URL }}
+          NG_APP_APP_ID: ${{ secrets.NG_APP_APP_ID }}
+          NG_APP_JS_KEY: ${{ secrets.NG_APP_JS_KEY }}
+
+      - name: Upload with FTP
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.4
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          local-dir: dist/adminv4/browser/
+          server-dir: ${{ secrets.FTP_REMOTE_DIR }}
