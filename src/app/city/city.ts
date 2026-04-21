@@ -72,7 +72,7 @@ export class CityComponent {
     { value: 'information.fares.days.sunday', label: 'Domingo' }
   ];
   fareOptionsObj = Object.fromEntries(this.fareOptions.map(item => [item.value, item]));
-  
+
   paymentOptions = [
     { value: 'cash', label: 'Efectivo', icon: 'cash-outline' },
     { value: 'card', label: 'Tarjeta', icon: 'card-outline' },
@@ -81,7 +81,7 @@ export class CityComponent {
     { value: 'RFC', label: 'RFC', icon: 'radio-outline' }
   ];
   paymentOptionsObj = Object.fromEntries(this.paymentOptions.map(item => [item.value, item]));
-  
+
   companyForm: FormGroup;
 
   constructor(private fb: FormBuilder, private router: ActivatedRoute, private utils: Utils, private cdr: ChangeDetectorRef) {
@@ -102,7 +102,7 @@ export class CityComponent {
       await this.getCompanies();
       this.isAdmin = await this.utils.isAdmin();
       this.loadTabsData();
-      this.cdr.detectChanges(); 
+      this.cdr.detectChanges();
     });
   }
 
@@ -117,7 +117,8 @@ export class CityComponent {
     this.placeMarks = await new Parse.Query('PlaceMark')
       .equalTo('city', this.city)
       .find();
-      this.newPlaceCityName = this.city.get("name")
+    this.newPlaceCityName = this.city.get("name")
+    this.cdr.detectChanges()
   }
 
   async addPlaceMark() {
@@ -156,7 +157,7 @@ export class CityComponent {
     this.newPlaceIcon = '';
     this.newPlaceHeight = 30;
     this.newPlaceWidth = 30;
-    this.cdr.detectChanges(); 
+    this.cdr.detectChanges();
   }
 
   async togglePlaceStatus(placeMark: any) {
@@ -171,8 +172,8 @@ export class CityComponent {
   async deletePlaceMark(placeMark: any) {
     try {
       await placeMark.destroy();
-      await this.loadPlaceMarks();
       alert('PlaceMark eliminado');
+      await this.loadPlaceMarks();
     } catch (e: any) {
       alert('Error: ' + e.message);
     }
@@ -186,7 +187,7 @@ export class CityComponent {
     const name = this.newFareManual ? this.newFareName : this.newFareDayType;
     const value = this.newFareValue;
     if (!name || !value) return;
-    
+
     const newFare: FareItem = { name, value };
     this.fares = [...this.fares, newFare];
     await this.saveFares();
@@ -212,7 +213,7 @@ export class CityComponent {
     } else {
       this.newFareName = '';
     }
-    this.cdr.detectChanges(); 
+    this.cdr.detectChanges();
   }
 
   async addPayment() {
@@ -279,7 +280,7 @@ export class CityComponent {
     try {
       await company.save();
       alert("Nueva empresa guardada");
-      this.cdr.detectChanges(); 
+      this.cdr.detectChanges();
       await this.getCompanies()
       this.companyForm.reset();
     } catch (e: any) {
@@ -326,11 +327,11 @@ export class CityComponent {
       await company.destroy();
       this.getCompanies();
       alert("Empresa de bus eliminada");
-    } catch(e: any) {
+    } catch (e: any) {
       alert("Error: " + e.message)
     }
   }
-  filterArray(array: any[], param: string,text: string) {
+  filterArray(array: any[], param: string, text: string) {
     return array.filter((item) => item.get(param).toLowerCase().includes(text))
   }
 }
