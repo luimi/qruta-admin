@@ -46,7 +46,8 @@ export class RouteComponent implements AfterViewInit {
     { value: 'card', label: 'Tarjeta', icon: 'icons/payment/card.svg' },
     { value: 'nfc', label: 'NFC', icon: 'icons/payment/nfc.svg' },
     { value: 'qr', label: 'QR', icon: 'icons/payment/qr.svg' },
-    { value: 'ticket', label: 'Ticket', icon: 'icons/payment/ticket.svg' }
+    { value: 'ticket', label: 'Ticket', icon: 'icons/payment/ticket.svg' },
+    { value: 'phone', label: 'Teléfono', icon: 'icons/payment/phone.svg' }
   ];
 
   selectedTransport: string = '';
