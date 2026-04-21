@@ -11,7 +11,7 @@ import Parse from 'parse';
 export class App {
 
   ngOnInit() {
-    Parse.initialize(import.meta.env['NG_APP_APP_ID'], import.meta.env['NG_APP_REST_KEY'] || "");
+    Parse.initialize(import.meta.env['NG_APP_APP_ID'], import.meta.env['NG_APP_JS_KEY'] || "");
     Parse.serverURL = import.meta.env['NG_APP_SERVER_URL'];
   }
 }
